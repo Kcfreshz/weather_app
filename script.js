@@ -50,7 +50,6 @@ const createweatherdetails = (cityName, weatherinfo, index) => {
 
 const weatherDetails = (lat, lon, cityName) => {
   const api_url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
-  console.log(api_url);
   fetch(api_url)
     .then(res => res.json())
     .then(data => {
@@ -80,14 +79,11 @@ const weatherDetails = (lat, lon, cityName) => {
 
 const cityCoordinates = () => {
   const cityName = Input.value.trim();
-  console.log(cityName);
   const geoCode = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=${API_KEY}`;
   fetch(geoCode)
     .then(res => res.json())
     .then(data => {
-      console.log(data);
       const { lat, lon, name } = data[0];
-      console.log(lat, lon, name);
       weatherDetails(lat, lon, name);
     })
     .catch(() => {
@@ -101,17 +97,14 @@ const userCoordinates = () => {
   navigator.geolocation.getCurrentPosition(
     position => {
       const { latitude, longitude } = position.coords;
-      console.log(latitude, longitude);
 
       fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
       )
         .then(res => res.json())
         .then(data => {
-          console.log(data);
           const { lon, lat } = data.coord;
           const cityName = data.name;
-          console.log(lon, lat, cityName);
           weatherDetails(lat, lon, cityName);
         })
         .catch(() => {
@@ -119,7 +112,6 @@ const userCoordinates = () => {
         });
     },
     error => {
-      console.error(error.code);
       if (error.code === error.PERMISSION_DENIED) {
         alert(
           'Geolocation request denied. Please reset location permission to grant access again.'
@@ -131,6 +123,11 @@ const userCoordinates = () => {
   );
 };
 
+const getUserLocationOnLOad = () => {
+  userCoordinates();
+};
+
+window.addEventListener('load', getUserLocationOnLOad);
 BtnSearch.addEventListener('click', cityCoordinates);
 Userlocation.addEventListener('click', userCoordinates);
 Input.addEventListener('keyup', e => e.key === 'Enter' && cityCoordinates());
